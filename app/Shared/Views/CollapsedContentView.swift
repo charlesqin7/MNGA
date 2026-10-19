@@ -32,7 +32,7 @@ struct CollapsedContentView<Content: View>: View {
             .animation(.none, value: collapsed) // disable animation to avoid glitch
         }.padding(.bottom, 1)
           .foregroundColor(.accentColor)
-          .font(.subheadline.bold())
+          .font(.subheadline.weight(.regular))
       }.buttonStyle(.plain)
 
       Group {

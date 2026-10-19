@@ -663,7 +663,7 @@ class ContentCombiner {
       }
     }
 
-    let combiner = ContentCombiner(parent: self, font: { $0?.bold() })
+    let combiner = ContentCombiner(parent: self, font: { $0?.weight(.regular) })
     combiner.visit(spans: bold.spans)
     append(combiner.build())
   }
@@ -688,7 +688,7 @@ class ContentCombiner {
   }
 
   private func visit(pid: Span.Tagged) {
-    let combiner = ContentCombiner(parent: self, font: { $0?.bold() })
+    let combiner = ContentCombiner(parent: self, font: { $0?.weight(.regular) })
     combiner.append(Text("Post"))
     if pid.attributes.count > 2 {
       let id = PostId.with {
@@ -702,7 +702,7 @@ class ContentCombiner {
   }
 
   private func visit(tid: Span.Tagged) {
-//    let combiner = ContentCombiner(parent: self, font: { $0?.bold() })
+//    let combiner = ContentCombiner(parent: self, font: { $0?.weight(.regular) })
 //    combiner.append(Text("Topic"))
     if let tid = tid.attributes.first {
 //      combiner.append(Text(" #\(tid) "))

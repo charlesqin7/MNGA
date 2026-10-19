@@ -17,15 +17,15 @@ struct RepliesNumView: View {
     case 0:
       (.subheadline.weight(.regular), .accentColor.opacity(0.0))
     case 1 ..< 40:
-      (.callout.weight(.medium), .accentColor.opacity(0.8))
+      (.callout.weight(.regular), .accentColor.opacity(0.8))
     case 40 ..< 100:
-      (.callout.weight(.semibold), .accentColor.opacity(0.9))
+      (.callout.weight(.regular), .accentColor.opacity(0.9))
     case 100 ..< 200:
-      (.body.weight(.semibold), .accentColor)
+      (.body.weight(.regular), .accentColor)
     case 200 ..< 500:
-      (.body.weight(.bold), .accentColor)
+      (.body.weight(.regular), .accentColor)
     case 500...:
-      (.body.weight(.heavy), .accentColor)
+      (.body.weight(.regular), .accentColor)
     default:
       (nil, nil)
     }

@@ -30,15 +30,6 @@ extension WhatsNew.PrimaryAction {
   }
 }
 
-extension WhatsNew.SecondaryAction {
-  static var checkOutPlus: Self {
-    .init(
-      title: "Check out Plus".localizedWNText,
-      action: .present(PlusSheetView().eraseToAnyView()),
-    )
-  }
-}
-
 extension String {
   var localizedWNText: WhatsNew.Text {
     .init(localized)
@@ -77,7 +68,6 @@ struct MNGAWhatsNew: WhatsNewCollectionProvider {
         ),
       ],
       primaryAction: .continue,
-      secondaryAction: .checkOutPlus,
     )
 
     WhatsNew(
@@ -106,7 +96,6 @@ struct MNGAWhatsNew: WhatsNewCollectionProvider {
         ),
       ],
       primaryAction: .continue,
-      secondaryAction: .checkOutPlus,
     )
 
     WhatsNew(
@@ -135,7 +124,6 @@ struct MNGAWhatsNew: WhatsNewCollectionProvider {
         ),
       ],
       primaryAction: .continue,
-      secondaryAction: .checkOutPlus,
     )
 
     WhatsNew(
@@ -164,7 +152,6 @@ struct MNGAWhatsNew: WhatsNewCollectionProvider {
         ),
       ],
       primaryAction: .continue,
-      secondaryAction: .checkOutPlus,
     )
   }
 

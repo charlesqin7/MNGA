@@ -184,21 +184,6 @@ struct ForumListView: View {
     .animation(.default, value: collapsedCategories)
   }
 
-  @ViewBuilder
-  var unlockButton: some View {
-    if UserInterfaceIdiom.current == .phone {
-      Button(action: { paywall.isShowingModal = true }) {
-        Text(paywall.status.tryOrUnlock).bold()
-      }
-      .if(paywall.status.shouldUseProminent) { $0.buttonStyle(.borderedProminent) }
-    } else {
-      Button(action: { paywall.isShowingModal = true }) {
-        Image(systemName: "sparkles")
-          .foregroundColor(.accentColor)
-      }
-    }
-  }
-
   @ToolbarContentBuilder
   var toolbar: some ToolbarContent {
     ToolbarItem(placement: .navigationBarLeading) { UserMenuView() }
@@ -209,10 +194,6 @@ struct ForumListView: View {
       )
     }
 
-    if !paywall.status.isPaid {
-      ToolbarItem(placement: .navigationBarTrailing) { unlockButton }
-      MaybeToolbarSpacer(.fixed, placement: .navigationBarTrailing)
-    }
     ToolbarItem(placement: .navigationBarTrailing) { filter }
 
     MaybeBottomBarSearchToolbarItem(asSpacer: false)
@@ -231,15 +212,7 @@ struct ForumListView: View {
     }
   }
 
-  var title: String {
-    if paywall.status.isPaid, prefs.showPlusInTitle {
-      "MNGA 𝐏𝐥𝐮𝐬"
-    } else if paywall.isUnlocked {
-      "MNGA"
-    } else {
-      "MNGA Lite"
-    }
-  }
+  var title: String { "MNGA" }
 
   var body: some View {
     Group {

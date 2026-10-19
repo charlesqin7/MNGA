@@ -166,15 +166,7 @@ struct UserView: View {
     }
   }
 
-  var nameWeight: Font.Weight {
-    if style == .huge {
-      .bold
-    } else if isAuthor {
-      .semibold
-    } else {
-      .medium
-    }
-  }
+  var nameWeight: Font.Weight { .regular }
 
   @ViewBuilder
   var nameView: some View {

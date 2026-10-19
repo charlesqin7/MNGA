@@ -22,7 +22,7 @@ struct TextSelectionView: View {
   @ViewBuilder
   var copyButton: some View {
     Button(action: { copyToPasteboard(text); presentation.dismiss() }) {
-      Text("Copy All").bold()
+      Text("Copy All").fontWeight(.regular)
     }
   }
 

@@ -75,7 +75,7 @@ struct InlineQuotedPostView: View {
     #if DEBUG
       .overlay(alignment: .topTrailing) {
         Text("INL")
-          .font(.caption2.monospaced().weight(.semibold))
+          .font(.caption2.monospaced().weight(.regular))
           .foregroundColor(.secondary.opacity(0.35))
           .padding(.horizontal, 6)
           .padding(.vertical, 2)

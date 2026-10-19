@@ -47,6 +47,7 @@ struct MNGAApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
+        .fontWeight(.regular)
         .onChange(of: prefs.themeColor) { setupColor() }
         .onChange(of: prefs.alwaysPortraitOnPhone) { AppInterfaceOrientation.applyCurrentPreference() }
         .onChange(of: prefs.forceProMotionDisplayLink) { ProMotionDisplayLink.shared.setEnabled($1) }

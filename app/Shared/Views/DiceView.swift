@@ -35,14 +35,14 @@ struct DiceView: View {
       HStack(alignment: .center) {
         Image(systemName: "dice.fill")
           .foregroundColor(.accentColor)
-          .bold()
+          .fontWeight(.regular)
           .symbolRenderingMode(.hierarchical)
 
         Group {
           let eq = Text(" → ").monospaced(false)
           let original = Text(result.originalExpression)
           let expanded = Text(result.expandedExpression).foregroundColor(.secondary)
-          let total = Text(result.totalDescription).bold()
+          let total = Text(result.totalDescription).fontWeight(.regular)
 
           if showingExpanded {
             Text("\(original)\(eq)\(expanded)\(eq)\(total)")

@@ -943,7 +943,7 @@ struct TopicDetailsView: View {
     if !posts.isEmpty {
       Divided {
         Text(title)
-          .font(.subheadline.bold())
+          .font(.subheadline.weight(.regular))
           .foregroundColor(.secondary)
           .padding(.top, 20)
 

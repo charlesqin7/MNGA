@@ -245,7 +245,7 @@ struct TopicListView: View {
       ForumIconView(iconURL: forum.iconURL)
       VStack(alignment: .leading, spacing: 0) {
         Text(forum.name.localized)
-          .fontWeight(.semibold)
+          .fontWeight(.regular)
         if let parentForumName {
           Text(parentForumName)
             .font(.caption)

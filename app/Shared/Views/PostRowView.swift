@@ -46,7 +46,7 @@ struct PostRowHeaderView<MenuContent: View>: View {
   var floor: some View {
     if post.floor != 0 {
       (Text("#").font(.footnote) + Text("\(post.floor)").font(.callout))
-        .fontWeight(.medium)
+        .fontWeight(.regular)
         .foregroundColor(.accentColor)
     }
   }
@@ -189,7 +189,7 @@ struct PostRowView: View {
       let score = max(Int32(post.score) + vote.delta, 0)
       Text("\(score)")
         .foregroundColor(vote.state == .up ? .accentColor : .secondary)
-        .font(vote.state == .up ? font.bold() : font)
+        .font(font)
         .contentTransition(.numericText(value: Double(score)))
 
       Button(action: { doVote(.downvote) }) {

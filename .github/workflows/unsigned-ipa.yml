@@ -7,6 +7,13 @@ on:
       - codex/build-unsigned-ipa
     paths:
       - .github/workflows/unsigned-ipa.yml
+      - app/**
+      - logic/**
+      - protos/**
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+      - Makefile
 
 permissions:
   contents: read
@@ -30,7 +37,9 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Swift Protobuf generator
-        run: brew install swift-protobuf
+        run: brew install swift-protobuf swiftformat
+      - name: Format Swift sources
+        run: make swiftformat
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
@@ -48,6 +57,7 @@ jobs:
           key: ios-xcode26-${{ runner.arch }}-${{ hashFiles('app/Project.swift', 'app/.package.resolved') }}-${{ github.sha }}
           restore-keys: |
             ios-xcode26-${{ runner.arch }}-${{ hashFiles('app/Project.swift', 'app/.package.resolved') }}-
+            ios-xcode26-${{ runner.arch }}-
       - name: Archive unsigned iPhone app
         shell: bash
         run: |
@@ -78,24 +88,24 @@ jobs:
           lipo "$APP/$EXECUTABLE" -verify_arch arm64
           mkdir -p build/ipa/Payload
           ditto "$APP" build/ipa/Payload/MNGA.app
-          (cd build/ipa && /usr/bin/zip -q -r ../MNGA-unsigned.ipa Payload)
-          unzip -t build/MNGA-unsigned.ipa
-          shasum -a 256 build/MNGA-unsigned.ipa > build/MNGA-unsigned.ipa.sha256
+          (cd build/ipa && /usr/bin/zip -q -r ../MNGA-full-system-font.ipa Payload)
+          unzip -t build/MNGA-full-system-font.ipa
+          shasum -a 256 build/MNGA-full-system-font.ipa > build/MNGA-full-system-font.ipa.sha256
           {
             echo '### MNGA unsigned IPA'
-            echo 'Download MNGA-unsigned from the workflow artifacts.'
+            echo 'Download MNGA-full-system-font from the workflow artifacts.'
             echo 'The IPA must be signed with your own sideloading tool before installation.'
             echo "Source commit: $GITHUB_SHA"
             echo 'SHA-256:'
-            cat build/MNGA-unsigned.ipa.sha256
+            cat build/MNGA-full-system-font.ipa.sha256
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: MNGA-unsigned
+          name: MNGA-full-system-font
           path: |
-            build/MNGA-unsigned.ipa
-            build/MNGA-unsigned.ipa.sha256
+            build/MNGA-full-system-font.ipa
+            build/MNGA-full-system-font.ipa.sha256
           if-no-files-found: error
           retention-days: 30
       - name: Preserve app archive if packaging fails

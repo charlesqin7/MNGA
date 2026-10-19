@@ -50,10 +50,8 @@ struct TopicSubjectContentInnerView: View {
         text = text.foregroundColor(ContentCombiner.palette["orange"]?.opacity(opacity))
       case .silver:
         text = text.foregroundColor(ContentCombiner.palette["silver"]?.opacity(opacity))
-      case .semibold:
-        text = text.fontWeight(.semibold)
-      case .bold:
-        text = text.fontWeight(.bold)
+      case .semibold, .bold:
+        continue
       case .italic:
         text = text.italic()
       case .underline:
@@ -69,12 +67,12 @@ struct TopicSubjectContentInnerView: View {
   var body: some View {
     if content.isEmpty {
       Text("Untitled")
-        .font(.headline.weight(.medium).italic())
+        .font(.headline.weight(.regular).italic())
         .foregroundColor(.secondary)
         .lineLimit(lineLimit)
     } else {
       Text(content)
-        .font(.headline.weight(.medium)) // headline is semibold by default
+        .font(.headline.weight(.regular))
         .if(prefs.topicListSubjectMulticolor) { applyFontModifiers($0, dimmed: topicSubjectDimmed) }
         .foregroundColor(topicSubjectDimmed ? .secondary : .primary) // applicable for subjects without color modifiers
         .if(selectable) { $0.textSelection(.enabled) }
@@ -102,7 +100,7 @@ struct TopicSubjectView: View {
       if topic.isFavored {
         Image(systemName: "bookmark")
       }
-    }.font(.footnote.bold())
+    }.font(.footnote.weight(.regular))
   }
 
   var tags: [String] {
@@ -126,7 +124,7 @@ struct TopicSubjectView: View {
           }
           if topic.hasParentForum {
             Text(topic.parentForum.name)
-              .fontWeight(.bold)
+              .fontWeight(.regular)
           }
           ForEach(tags, id: \.self) { tag in
             Text(tag)

@@ -139,41 +139,7 @@ struct PreferencesInnerView: View {
   @EnvironmentObject var paywall: PaywallModel
 
   @ViewBuilder
-  var paywallSection: some View {
-    let status = paywall.status
-
-    Section(
-      header: Text("Plus"),
-      footer: Text(status.isPaid ? "Plus Thanks" : "Plus Explanation"),
-    ) {
-      if status.isPaid {
-        NavigationLink(destination: PlusView()) {
-          Label("Plus Unlocked", systemImage: "hands.and.sparkles")
-        }
-        Toggle(isOn: $pref.showPlusInTitle) {
-          Label("Show Plus in Title", systemImage: "sparkle")
-        }
-      } else {
-        NavigationLink(destination: PlusView()) {
-          Label(status.tryOrUnlock, systemImage: "sparkles")
-        }
-      }
-
-      if case let .trial(expiration) = status {
-        Group {
-          if status.trialValid ?? false {
-            Label("Trial ends on \(expiration, format: .dateTime.year().month().day())", systemImage: "calendar")
-          } else {
-            Label("Your Plus trial has expired", systemImage: "calendar")
-          }
-        }.foregroundColor(.secondaryLabel)
-      }
-    }
-  }
-
-  @ViewBuilder
   var debug: some View {
-    UnlockStatusDebugPickerView()
     Toggle(isOn: $pref.debugAlwaysShowNotificationBadge) {
       Text("Always Show Notification Badge")
     }
@@ -321,7 +287,11 @@ struct PreferencesInnerView: View {
 
   var body: some View {
     Form {
-      paywallSection
+      Section {
+        Label("All Features Available", systemImage: "checkmark.circle")
+        Text("All features are available. No purchase or trial is required.")
+          .foregroundStyle(.secondary)
+      }
 
       #if DEBUG
         Section(header: Text("Debug")) { debug }

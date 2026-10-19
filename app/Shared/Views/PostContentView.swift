@@ -93,7 +93,7 @@ struct PostContentView<S: Sequence & Hashable>: View where S.Element == Span {
       if let error, !error.isEmpty {
         QuoteView(fullWidth: true) {
           Text("Bad or Unsupported Post Content Format")
-            .bold()
+            .fontWeight(.regular)
             + Text("\n") +
             Text(error)
             .font(.system(.footnote, design: .monospaced))
