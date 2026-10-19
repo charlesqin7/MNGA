@@ -35,11 +35,19 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           key: ios-release
+          cache-on-failure: true
       - name: Build Rust framework and generate Swift bindings
         run: make logic-deploy
       - name: Generate Xcode project
         working-directory: app
         run: tuist generate --no-open
+      - name: Cache Xcode build products
+        uses: actions/cache@v4
+        with:
+          path: build/DerivedData
+          key: ios-xcode26-${{ runner.arch }}-${{ hashFiles('app/Project.swift', 'app/.package.resolved') }}-${{ github.sha }}
+          restore-keys: |
+            ios-xcode26-${{ runner.arch }}-${{ hashFiles('app/Project.swift', 'app/.package.resolved') }}-
       - name: Archive unsigned iPhone app
         shell: bash
         run: |
@@ -67,7 +75,7 @@ jobs:
           test -f "$APP/Info.plist"
           EXECUTABLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Info.plist")
           test -f "$APP/$EXECUTABLE"
-          lipo -verify_arch arm64 "$APP/$EXECUTABLE"
+          lipo "$APP/$EXECUTABLE" -verify_arch arm64
           mkdir -p build/ipa/Payload
           ditto "$APP" build/ipa/Payload/MNGA.app
           (cd build/ipa && /usr/bin/zip -q -r ../MNGA-unsigned.ipa Payload)
@@ -90,6 +98,14 @@ jobs:
             build/MNGA-unsigned.ipa.sha256
           if-no-files-found: error
           retention-days: 30
+      - name: Preserve app archive if packaging fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MNGA-app-archive
+          path: build/MNGA.xcarchive
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
