@@ -1,0 +1,100 @@
+name: Build Unsigned IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/build-unsigned-ipa
+    paths:
+      - .github/workflows/unsigned-ipa.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unsigned-ipa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build MNGA for iPhone
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26"
+      - uses: jdx/mise-action@v4
+      - uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Swift Protobuf generator
+        run: brew install swift-protobuf
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ios-release
+      - name: Build Rust framework and generate Swift bindings
+        run: make logic-deploy
+      - name: Generate Xcode project
+        working-directory: app
+        run: tuist generate --no-open
+      - name: Archive unsigned iPhone app
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          xcodebuild archive \
+            -workspace app/MNGA.xcworkspace \
+            -scheme MNGA \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$PWD/build/MNGA.xcarchive" \
+            -derivedDataPath "$PWD/build/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            2>&1 | tee build/xcodebuild.log
+      - name: Package and verify IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="$PWD/build/MNGA.xcarchive/Products/Applications/MNGA.app"
+          test -d "$APP"
+          test -f "$APP/Info.plist"
+          EXECUTABLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Info.plist")
+          test -f "$APP/$EXECUTABLE"
+          lipo -verify_arch arm64 "$APP/$EXECUTABLE"
+          mkdir -p build/ipa/Payload
+          ditto "$APP" build/ipa/Payload/MNGA.app
+          (cd build/ipa && /usr/bin/zip -q -r ../MNGA-unsigned.ipa Payload)
+          unzip -t build/MNGA-unsigned.ipa
+          shasum -a 256 build/MNGA-unsigned.ipa > build/MNGA-unsigned.ipa.sha256
+          {
+            echo '### MNGA unsigned IPA'
+            echo 'Download MNGA-unsigned from the workflow artifacts.'
+            echo 'The IPA must be signed with your own sideloading tool before installation.'
+            echo "Source commit: $GITHUB_SHA"
+            echo 'SHA-256:'
+            cat build/MNGA-unsigned.ipa.sha256
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: MNGA-unsigned
+          path: |
+            build/MNGA-unsigned.ipa
+            build/MNGA-unsigned.ipa.sha256
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MNGA-build-log
+          path: build/xcodebuild.log
+          if-no-files-found: ignore
+          retention-days: 7
